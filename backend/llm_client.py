@@ -47,6 +47,9 @@ async def query_model(
         "messages": messages,
     }
 
+    import time
+    start_time = time.time()
+
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
@@ -56,12 +59,14 @@ async def query_model(
             )
             response.raise_for_status()
 
+            duration = time.time() - start_time
             data = response.json()
             message = data['choices'][0]['message']
 
             return {
                 'content': message.get('content'),
-                'reasoning_details': message.get('reasoning_details')
+                'reasoning_details': message.get('reasoning_details'),
+                'duration': duration
             }
 
     except Exception as e:

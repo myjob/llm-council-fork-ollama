@@ -24,9 +24,11 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
     stage1_results = []
     for model, response in responses.items():
         if response is not None:  # Only include successful responses
+            duration = response.get('duration', 0.0)
             stage1_results.append({
                 "model": model,
-                "response": response.get('content', '')
+                "response": response.get('content', ''),
+                "duration": duration
             })
 
     return stage1_results
@@ -57,21 +59,22 @@ async def stage2_collect_rankings(
 
     # Build the ranking prompt
     responses_text = "\n\n".join([
-        f"Response {label}:\n{result['response']}"
+        f"Response {label} (Time: {result.get('duration', 0.0):.2f}s):\n{result['response']}"
         for label, result in zip(labels, stage1_results)
     ])
 
-    ranking_prompt = f"""You are evaluating different responses to the following question:
+    ranking_prompt = f"""You are evaluating different responses to the following question.
 
 Question: {user_query}
 
-Here are the responses from different models (anonymized):
+Here are the responses from different models (anonymized), including their generation time:
 
 {responses_text}
 
 Your task:
-1. First, evaluate each response individually. For each response, explain what it does well and what it does poorly.
-2. Then, at the very end of your response, provide a final ranking.
+1. First, evaluate each response individually. Consider both the quality of the answer and the generation time (runtime). Faster is better, but quality is paramount.
+2. For each response, explain what it does well and what it does poorly.
+3. Then, at the very end of your response, provide a final ranking.
 
 IMPORTANT: Your final ranking MUST be formatted EXACTLY as follows:
 - Start with the line "FINAL RANKING:" (all caps, with colon)
@@ -81,14 +84,14 @@ IMPORTANT: Your final ranking MUST be formatted EXACTLY as follows:
 
 Example of the correct format for your ENTIRE response:
 
-Response A provides good detail on X but misses Y...
-Response B is accurate but lacks depth on Z...
-Response C offers the most comprehensive answer...
+Response A provides good detail... (Time: 2.5s)
+Response B is accurate but slow... (Time: 15.2s)
+...
 
 FINAL RANKING:
-1. Response C
-2. Response A
-3. Response B
+1. Response A
+2. Response B
+3. Response C
 
 Now provide your evaluation and ranking:"""
 

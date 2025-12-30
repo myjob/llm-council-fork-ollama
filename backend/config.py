@@ -13,6 +13,7 @@ COUNCIL_MODELS = [
     "ollama/gemma3:27b",
     "ollama/gpt-oss:120b",
     "ollama/olmo-3:32b",
+    "ollama/llama3.1:70b"
 ]
 
 # Chairman model - synthesizes final response
@@ -26,10 +27,10 @@ OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", "http://192.168.1.123:11434/v1/chat
 
 # Model used for generating conversation titles
 # TITLE_GENERATION_MODEL = "google/gemini-2.5-flash"
-TITLE_GENERATION_MODEL = "ollama/gpt-oss:120b"
+TITLE_GENERATION_MODEL = "ollama/llama3.1:70b"
 
 # Request timeout in seconds (default 120s) - Increase for large local models
-MODEL_TIMEOUT = float(os.getenv("MODEL_TIMEOUT", "300.0"))
+MODEL_TIMEOUT = float(os.getenv("MODEL_TIMEOUT", "600.0"))
 
 # Data directory for conversation storage
 DATA_DIR = "data/conversations"
