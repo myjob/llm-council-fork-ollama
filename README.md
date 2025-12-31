@@ -85,3 +85,9 @@ Then open http://localhost:5173 in your browser.
 - **Frontend:** React + Vite, react-markdown for rendering
 - **Storage:** JSON files in `data/conversations/`
 - **Package Management:** uv for Python, npm for JavaScript
+
+
+# Forked & extended
+* ollama models support on local server
+* runtime timeout for models extended (init load of model can take up to 1 min)
+* duration adds to the ranking and is shown in the UI
